@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CogniCraft AI — Learning-Science Flashcards, Quizzes & Summarizer</title>
+  <meta name="description" content="Turn lecture notes and PDFs into high-retention active recall flashcards, interactive quizzes, and executive summaries using Gemma and OpenAI Compatibility.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+  <div class="app-background">
+    <div class="glow-orb glow-orb-1"></div>
+    <div class="glow-orb glow-orb-2"></div>
+    <div class="glow-orb glow-orb-3"></div>
+  </div>
+
+  <div class="app-container">
+    <!-- Main Header -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>Cogni<span>Craft</span></h1>
+          <span class="badge-pill">Study Intelligence</span>
+        </div>
+      </div>
+
+      <nav class="nav-tabs" role="tablist">
+        <button class="nav-tab active" data-tab="upload" id="tab-upload">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+          Upload & Notes
+        </button>
+        <button class="nav-tab" data-tab="flashcards" id="tab-flashcards">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 15h0M2 9.5h20"/></svg>
+          Flashcards <span class="tab-counter" id="cards-badge">0</span>
+        </button>
+        <button class="nav-tab" data-tab="quiz" id="tab-quiz">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></svg>
+          Quiz Arena <span class="tab-counter" id="quiz-badge">0</span>
+        </button>
+        <button class="nav-tab" data-tab="summary" id="tab-summary">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          Executive Summary
+        </button>
+      </nav>
+
+      <div class="header-actions">
+        <button id="btn-sound-toggle" class="btn-icon" title="Toggle audio feedback" aria-label="Toggle Sound">
+          <svg id="icon-sound-on" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+          <svg id="icon-sound-off" class="hidden" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+        </button>
+
+        <button id="btn-settings" class="btn-secondary" title="Configure OpenRouter / Gemma / Gemini API settings">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span id="model-indicator">Gemma / OpenRouter</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- MAIN VIEWS -->
+    <main class="main-content">
+
+      <!-- ============================================ -->
+      <!-- TAB 1: UPLOAD & NOTES STUDIO -->
+      <!-- ============================================ -->
+      <section id="view-upload" class="tab-pane active">
+        <div class="hero-banner">
+          <div class="hero-content">
+            <span class="eyebrow">Learning-Science Powered Active Recall</span>
+            <h2>Transform Lecture Notes & PDFs into Mastered Knowledge</h2>
+            <p>Upload a course syllabus, slide deck, research paper, or textbook chapter. Our cognitive AI extracts core principles into spaced-repetition flashcards, assessments, and structured cheat sheets.</p>
+          </div>
+          <div class="sample-pills-container">
+            <span class="sample-label">Or load a pre-built study set:</span>
+            <div class="sample-buttons" id="sample-buttons-list">
+              <!-- Injected by JavaScript -->
+            </div>
+          </div>
+        </div>
+
+        <div class="ingest-grid">
+          <!-- Left Column: Upload & Options -->
+          <div class="ingest-card">
+            <div class="card-title-row">
+              <h3>1. Upload Document</h3>
+              <span class="card-subtitle">PDF, TXT, or Markdown (Max 25MB)</span>
+            </div>
+
+            <div class="dropzone" id="pdf-dropzone">
+              <input type="file" id="file-input" accept=".pdf,.txt,.md" class="hidden-input">
+              <div class="dropzone-content">
+                <div class="upload-icon-circle">
+                  <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="12" y1="18" x2="12" y2="12"></line>
+                    <line x1="9" y1="15" x2="12" y2="12"></line>
+                    <line x1="15" y1="15" x2="12" y2="12"></line>
+                  </svg>
+                </div>
+                <p class="drop-text">Drag & drop your <strong>PDF</strong> or click to browse</p>
+                <p class="drop-hint">Extracts full text with zero server-side storage</p>
+              </div>
+              <div id="upload-progress-bar" class="progress-line hidden"><div class="progress-fill"></div></div>
+            </div>
+
+            <!-- Configuration Controls -->
+            <div class="config-section">
+              <div class="config-row">
+                <label for="card-count-select">Number of Flashcards</label>
+                <div class="pill-group" id="card-count-pills">
+                  <button class="pill-btn" data-value="10">10</button>
+                  <button class="pill-btn active" data-value="15">15</button>
+                  <button class="pill-btn" data-value="20">20</button>
+                  <button class="pill-btn" data-value="25">25</button>
+                </div>
+              </div>
+
+              <div class="config-row">
+                <label for="difficulty-select">Target Cognitive Difficulty</label>
+                <div class="pill-group" id="difficulty-pills">
+                  <button class="pill-btn" data-value="easy">Easy (Recall)</button>
+                  <button class="pill-btn active" data-value="medium">Medium (Explain)</button>
+                  <button class="pill-btn" data-value="hard">Hard (Apply)</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Primary Generate Button -->
+            <div class="action-buttons-stack">
+              <button id="btn-generate-all" class="btn-primary btn-large">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                <span>Synthesize Flashcards & Quiz</span>
+              </button>
+              <div class="sub-actions">
+                <button id="btn-generate-cards-only" class="btn-ghost">Cards Only</button>
+                <button id="btn-generate-quiz-only" class="btn-ghost">Quiz Only</button>
+                <button id="btn-generate-summary-only" class="btn-ghost">Summary Only</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Extracted Notes & Editor -->
+          <div class="notes-card">
+            <div class="card-title-row">
+              <div>
+                <h3>2. Extracted Lecture Notes</h3>
+                <span class="card-subtitle">Review, edit, or paste your raw notes directly</span>
+              </div>
+              <div class="doc-stats" id="doc-stats">
+                <span id="stat-words">0 words</span>
+                <span class="stat-dot">•</span>
+                <span id="stat-time">~0 min read</span>
+              </div>
+            </div>
+
+            <div class="editor-wrapper">
+              <textarea id="notes-textarea" placeholder="Paste your lecture notes, study outline, or upload a PDF on the left..." spellcheck="false"></textarea>
+            </div>
+
+            <div class="editor-footer">
+              <button id="btn-clear-notes" class="btn-text">Clear Text</button>
+              <span class="learning-tip">💡 Learning tip: 1 card per key concept increases long-term retention by 40%.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================ -->
+      <!-- TAB 2: FLASHCARD STUDY ARENA -->
+      <!-- ============================================ -->
+      <section id="view-flashcards" class="tab-pane">
+        <!-- Deck Stats & Leitner Progress -->
+        <div class="study-stats-bar">
+          <div class="stats-col">
+            <h2 id="deck-title">Active Recall Deck</h2>
+            <span class="deck-meta" id="deck-meta">0 Cards • Medium Difficulty</span>
+          </div>
+
+          <div class="leitner-boxes">
+            <div class="leitner-box" title="Box 1: To Review">
+              <span class="box-count count-again" id="count-box1">0</span>
+              <span class="box-label">Review</span>
+            </div>
+            <div class="leitner-box" title="Box 2: Learning">
+              <span class="box-count count-hard" id="count-box2">0</span>
+              <span class="box-label">Learning</span>
+            </div>
+            <div class="leitner-box" title="Box 3: Good">
+              <span class="box-count count-good" id="count-box3">0</span>
+              <span class="box-label">Retained</span>
+            </div>
+            <div class="leitner-box" title="Box 4: Mastered">
+              <span class="box-count count-easy" id="count-box4">0</span>
+              <span class="box-label">Mastered</span>
+            </div>
+          </div>
+
+          <div class="study-actions">
+            <button id="btn-shuffle" class="btn-secondary btn-sm" title="Shuffle Deck">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+              Shuffle
+            </button>
+            <button id="btn-export-anki" class="btn-secondary btn-sm" title="Export to Anki">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+              Export Anki
+            </button>
+            <button id="btn-export-json" class="btn-secondary btn-sm" title="Export as JSON">JSON</button>
+          </div>
+        </div>
+
+        <!-- Progress Tracker Line -->
+        <div class="deck-progress-container">
+          <div class="deck-progress-bar" id="deck-progress-bar" style="width: 0%;"></div>
+        </div>
+
+        <!-- 3D Interactive Card Stage -->
+        <div class="flashcard-stage">
+          <div class="card-3d-wrapper" id="active-card-container">
+            <div class="card-3d" id="active-card">
+              <!-- Front Face -->
+              <div class="card-face card-front">
+                <div class="card-header">
+                  <span class="card-topic-tag" id="card-topic">Core Concept</span>
+                  <span class="card-diff-tag diff-medium" id="card-diff">Medium</span>
+                </div>
+                <div class="card-body">
+                  <p class="card-prompt" id="card-front-text">Generate or load a deck to begin your active recall study session.</p>
+                </div>
+                <div class="card-footer">
+                  <button class="btn-speak" id="btn-speak-front" title="Read aloud">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+                  </button>
+                  <span class="flip-hint">Click card or press <strong>Space</strong> to reveal answer</span>
+                </div>
+              </div>
+
+              <!-- Back Face -->
+              <div class="card-face card-back">
+                <div class="card-header">
+                  <span class="card-topic-tag">Answer & Explanation</span>
+                  <span class="flip-back-hint">Click to flip back</span>
+                </div>
+                <div class="card-body">
+                  <p class="card-answer" id="card-back-text">Answer explanation will appear here.</p>
+                </div>
+                <div class="card-footer-rating">
+                  <span class="rating-label">How well did you know this?</span>
+                  <div class="rating-buttons">
+                    <button class="btn-rate rate-again" data-rating="again" title="Shortcut: Press 1">
+                      <span class="rate-num">1</span> Again
+                    </button>
+                    <button class="btn-rate rate-hard" data-rating="hard" title="Shortcut: Press 2">
+                      <span class="rate-num">2</span> Hard
+                    </button>
+                    <button class="btn-rate rate-good" data-rating="good" title="Shortcut: Press 3">
+                      <span class="rate-num">3</span> Good
+                    </button>
+                    <button class="btn-rate rate-easy" data-rating="easy" title="Shortcut: Press 4">
+                      <span class="rate-num">4</span> Easy
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Navigation Controls -->
+          <div class="card-nav-controls">
+            <button id="btn-prev-card" class="btn-nav" title="Previous Card (Left Arrow)">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <span class="card-index-indicator" id="card-index-text">Card 0 of 0</span>
+            <button id="btn-next-card" class="btn-nav" title="Next Card (Right Arrow)">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter & Search Deck Grid -->
+        <div class="deck-grid-section">
+          <div class="grid-header">
+            <h3>All Cards in Deck</h3>
+            <div class="grid-filters">
+              <input type="text" id="filter-search" class="search-input" placeholder="Search cards by keyword or topic...">
+              <select id="filter-diff" class="select-input">
+                <option value="all">All Difficulties</option>
+                <option value="easy">Easy Only</option>
+                <option value="medium">Medium Only</option>
+                <option value="hard">Hard Only</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="cards-preview-grid" id="cards-preview-grid">
+            <!-- Injected cards preview -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================ -->
+      <!-- TAB 3: QUIZ ARENA -->
+      <!-- ============================================ -->
+      <section id="view-quiz" class="tab-pane">
+        <div class="quiz-container">
+          <!-- Quiz Header -->
+          <div class="quiz-header">
+            <div>
+              <span class="eyebrow" id="quiz-topic-eyebrow">Active Recall Assessment</span>
+              <h2 id="quiz-title">Knowledge Check</h2>
+            </div>
+            <div class="quiz-stats-group">
+              <div class="quiz-stat-box">
+                <span class="stat-value" id="quiz-score-val">0</span>
+                <span class="stat-title">Score</span>
+              </div>
+              <div class="quiz-stat-box">
+                <span class="stat-value" id="quiz-q-progress">1 / 8</span>
+                <span class="stat-title">Question</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Active Question Card -->
+          <div class="quiz-card" id="quiz-active-card">
+            <div class="quiz-q-meta">
+              <span class="q-badge" id="quiz-q-difficulty">Medium</span>
+              <span class="q-topic" id="quiz-q-topic">Topic</span>
+            </div>
+
+            <h3 class="quiz-question-text" id="quiz-question-text">Question will appear here once synthesized.</h3>
+
+            <div class="quiz-options-list" id="quiz-options-list">
+              <!-- Injected multiple choice options -->
+            </div>
+
+            <!-- Detailed Explanation Callout -->
+            <div class="quiz-explanation hidden" id="quiz-explanation-box">
+              <div class="explanation-title">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                <span>Pedagogical Explanation</span>
+              </div>
+              <p id="quiz-explanation-text">Explanation text goes here.</p>
+            </div>
+
+            <div class="quiz-footer">
+              <button id="btn-quiz-next" class="btn-primary" disabled>Next Question →</button>
+            </div>
+          </div>
+
+          <!-- Quiz Results Screen (Hidden initially) -->
+          <div class="quiz-results hidden" id="quiz-results-screen">
+            <div class="results-badge">
+              <span class="trophy-emoji">🏆</span>
+              <h2>Assessment Complete!</h2>
+              <p id="results-summary-text">You scored 7 out of 8 (87.5%)</p>
+            </div>
+            <div class="results-actions">
+              <button id="btn-quiz-retry" class="btn-secondary">Retake Quiz</button>
+              <button id="btn-goto-cards" class="btn-primary">Review in Flashcards</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================ -->
+      <!-- TAB 4: EXECUTIVE SUMMARY & MIND NOTES -->
+      <!-- ============================================ -->
+      <section id="view-summary" class="tab-pane">
+        <div class="summary-container">
+          <div class="summary-header">
+            <div>
+              <span class="eyebrow">Cognitive Synthesis</span>
+              <h2 id="summary-doc-title">Executive Summary & Cognitive Map</h2>
+            </div>
+            <button id="btn-copy-summary" class="btn-secondary btn-sm">Copy as Markdown</button>
+          </div>
+
+          <!-- Executive Overview -->
+          <div class="summary-card executive-overview">
+            <div class="summary-card-header">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+              <h3>Core Thesis & Executive Summary</h3>
+            </div>
+            <div class="summary-body" id="summary-overview-text">
+              <p>Upload a document or select a sample to generate an automated executive summary and conceptual blueprint.</p>
+            </div>
+          </div>
+
+          <!-- Two Column: Key Concepts Glossary & Cause/Effect -->
+          <div class="summary-two-col">
+            <!-- Key Terms Glossary -->
+            <div class="summary-card">
+              <div class="summary-card-header">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <h3>Key Terms & Definitions</h3>
+              </div>
+              <div class="terms-list" id="summary-terms-list">
+                <!-- Injected terms -->
+              </div>
+            </div>
+
+            <!-- Cause & Effect / Mechanisms -->
+            <div class="summary-card">
+              <div class="summary-card-header">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
+                <h3>Mechanism & Consequences</h3>
+              </div>
+              <div class="cause-effect-list" id="summary-cause-effect-list">
+                <!-- Injected cause and effect -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Study Readiness Checklist -->
+          <div class="summary-card">
+            <div class="summary-card-header">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+              <h3>Active Recall Mastery Checklist</h3>
+            </div>
+            <div class="checklist" id="summary-checklist">
+              <!-- Injected checklist items -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Global Toast Notification -->
+    <div id="toast" class="toast hidden"></div>
+
+    <!-- Loading Modal Overlay -->
+    <div id="loading-overlay" class="modal-overlay hidden">
+      <div class="loading-modal">
+        <div class="spinner"></div>
+        <h3 id="loading-title">Processing Document</h3>
+        <p id="loading-desc">Extracting concepts and constructing learning science flashcards...</p>
+      </div>
+    </div>
+
+    <!-- Settings & API Key Modal -->
+    <div id="settings-modal" class="modal-overlay hidden">
+      <div class="settings-modal-card">
+        <div class="modal-header">
+          <h3>AI Engine & OpenRouter Settings</h3>
+          <button id="btn-close-settings" class="btn-icon">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="env-banner" id="env-status-banner">
+            <div><strong>Backend .env status:</strong> <span id="env-detected-status">Detecting...</span></div>
+            <span class="field-hint">You can add your keys to the project <code>.env</code> file (OPENROUTER_API_KEY or GEMINI_API_KEY) or enter them below.</span>
+          </div>
+
+          <div class="form-group">
+            <label for="input-api-key">Custom OpenRouter or Gemini Key (Overrides .env)</label>
+            <input type="password" id="input-api-key" placeholder="sk-or-... or AIzaSy..." autocomplete="off">
+            <span class="field-hint">Leave blank to use keys from .env or the built-in local engine.</span>
+          </div>
+
+          <div class="form-group">
+            <label for="input-model">Target Model</label>
+            <select id="input-model">
+              <option value="google/gemma-2-9b-it" selected>Google Gemma 2 9B (OpenRouter)</option>
+              <option value="google/gemma-2-27b-it">Google Gemma 2 27B (OpenRouter)</option>
+              <option value="gemini-2.5-flash">Gemini 2.5 Flash (Direct)</option>
+              <option value="gemini-3.8-flash">Gemini 3.8 Flash</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="input-base-url">Custom Base URL (Optional)</label>
+            <input type="text" id="input-base-url" placeholder="https://openrouter.ai/api/v1">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="btn-save-settings" class="btn-primary">Save Settings</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
